@@ -42,9 +42,9 @@ my @volumes; # Server Volumes Array
 my $datadir="SYS:/etc/"; #Trustee Results Data Directory
 my $fullbackup="alltrusts.csv"; #Full Trustee Backup Filename
 my $postprocess="newtrusts.csv"; #Post Migration Trustee Backup
-my $recipient='ryan.kather@hfhs.org'; # Processing Results Recipient
-my $relay="smtp.hfhs.org"; # SMTP Relay Hostname or IP Address
-my $sender=$host.'@hfhs.org'; # SMTP Sender Address
+my $recipient='someuser@somedomain.com'; # Processing Results Recipient
+my $relay="smtpserver.domainname.com"; # SMTP Relay Hostname or IP Address
+my $sender=$host.'@domainname.com'; # SMTP Sender Address
 my $timeout=3600; # Maximum Time to Wait for System Commands
 my $usermap="user.map"; #User Input File for Home Mappings
 
@@ -57,18 +57,18 @@ my $backlast=$#backupcmd;
 my $removelast=$#removecmd;
 
 # Parse Server Volumes into Array and Display Output
-#@volumes=get_volumes();
-#print "Found the Following Volumes:\n\n\t";
-#print join "\n\t",@volumes;
-#print "\n\n";
+@volumes=get_volumes();
+print "Found the Following Volumes:\n\n\t";
+print join "\n\t",@volumes;
+print "\n\n";
 
 # Cleanup Leftover Files from Previous Run if Present
-#clean_files();
+clean_files();
 
 # Retrieve Full Backup of System Trustees
-#system("load @backupcmd $datadir$fullbackup");
-#sleep(2); # Delay Processing 2 Seconds for NLM Load
-#wait_for_nlm();
+system("load @backupcmd $datadir$fullbackup");
+sleep(2); # Delay Processing 2 Seconds for NLM Load
+wait_for_nlm();
 
 # Extract User Home Directory Paths from User Input
 @userpaths=parsecsv($datadir.$usermap);
@@ -225,7 +225,7 @@ sub parsecsv {
 		next if (/UserID,NDSMap/);
 		($userid, $userpath) = split(",");
 		# Regex Isolate the Server Relative Paths
-		$userpath =~ s/^NDS:\/\/HFHS\\\\$host\\//g;
+		$userpath =~ s/^NDS:\/\/TREE\\\\$host\\//g;
 		$userpath =~ s/(\\HOME.+)/:$+/g;
 		# Write Reformatted Paths to Results Array
 		push(@pathresults, $userpath);
