@@ -1,23 +1,36 @@
 # bulkrights.pl
-#
-# Script to automatically backup and remove rights from
-# user home directories migrated to Windows.  The script 
-# will email the rights before and after processing.  The
-# input is defined by the Quest NDS Migrator utility.
 
-# The Author(s) cannot be held liable in any way for
-# any damages that may result from the use of this program.
-#
-# Requires: Perl::Net::SMTP
-# 			Perl::IO::File
-#			Perl::Sys::Hostname
-#
+#   Automatically backup and remove TRUSTEE rights from NSS volumes
+#   on NetWare based on the output for Quest NDS Migrator Tool.  
+
+#   Copyright (C) 2011 Ryan Kather
+
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# Requires: 	Perl::Net::SMTP
+# 		Perl::IO::File
+#		Perl::Sys::Hostname
+
 # Written By: Ryan Kather
-#
-# Version : 0.1
-#			0.2	Added Email Results
-#			0.3 Added CSV Parsing without Text::CSV
-#			0.4	Added Timeout for Trustee.NLM
+
+# Version : 	0.4
+
+# Changelog:
+#		0.2	Added Email Results
+#		0.3 	Added CSV Parsing without Text::CSV
+#		0.4	Added Timeout for Trustee.NLM
+#		0.5	GPL Text Addendum and Fixup
 
 #---------------------------------------
 # MAIN ROUTINE
@@ -277,8 +290,8 @@ sub promptUser {
 		print $promptString, ": ";
 	}
 
-	$| = 1;               # force a flush after our print
-	$_ = <STDIN>;         # get the input from STDIN (presumably the keyboard)
+	$| = 1;		# force a flush after our print
+	$_ = <STDIN>;	# get the input from STDIN (presumably the keyboard)
 
 
 	#-------------------------------------------------------------------#
