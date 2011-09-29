@@ -86,10 +86,8 @@ wait_for_nlm();
 # Extract User Home Directory Paths from User Input
 @userpaths=parsecsv($datadir.$usermap);
 
-foreach(@userpaths) {
-	system("load @removecmd $_");
-	sleep(3);
-}
+# Create New Rights Structure 
+newrights();
 
 # Retrieve Post Processing Rights Backup
 system("load @backupcmd $datadir$postprocess");
@@ -216,6 +214,10 @@ sub mail_results {
 	$smtp->datasend("--$boundary\n");
 	$smtp->dataend();
 	$smtp->quit;
+}
+
+# New Rights Structure from User Input and Trustee Backup
+sub newrights {
 }
 
 # Parse User Input CSV into Home Directory Paths
