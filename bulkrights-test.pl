@@ -55,9 +55,9 @@ my @volumes; # Server Volumes Array
 my $datadir="./"; #Trustee Results Data Directory
 my $fullbackup="trustee.txt"; #Full Trustee Backup Filename
 my $postprocess="newtrusts.csv"; #Post Migration Trustee Backup
-my $recipient='someuser@somedomain.com'; # Processing Results Recipient
-my $relay="smtpserver.domainname.com"; # SMTP Relay Hostname or IP Address
-my $sender=$host.'@domainname.com'; # SMTP Sender Address
+my $recipient='someuser@example.com'; # Processing Results Recipient
+my $relay="smtpserver.example.com"; # SMTP Relay Hostname or IP Address
+my $sender=$host.'@example.com'; # SMTP Sender Address
 my $timeout=3600; # Maximum Time to Wait for System Commands
 my $treename="NDSTREE"; # Novell Tree Name for Regex on Quest Input
 my $usermap="user.map"; #User Input File for Home Mappings
