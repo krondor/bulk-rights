@@ -98,7 +98,11 @@ mail_results($recipient,$relay,$sender);
 
 ###### Subroutines and functions ######
 
-# Cleanup Processing Files
+#------------------------------(  clean_files  )--------------------------------#
+#  FUNCTION:	clean_files							#
+#										#
+#  PURPOSE:	Cleanup Rigts Files and other Bits this Program May Leave	#
+#-------------------------------------------------------------------------------#
 sub clean_files {
 	# Delete Any Files Present in DATA Directory Before Posting New Files
 	print "Scanning for existing Trustee CSV files in $datadir\n";
