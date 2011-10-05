@@ -24,14 +24,6 @@
 
 # Written By: Ryan Kather
 
-# Version : 	0.4
-
-# Changelog:
-#		0.2	Added Email Results
-#		0.3 	Added CSV Parsing without Text::CSV
-#		0.4	Added Timeout for Trustee.NLM
-#		0.5	GPL Text Addendum and Fixup
-
 #---------------------------------------
 # MAIN ROUTINE
 #---------------------------------------
@@ -89,10 +81,10 @@ sleep(2); # Delay Processing 2 Seconds for NLM Load
 wait_for_nlm();
 
 # Parse Input CSV of Migrating Folders
-@userpaths=parsecsv($datadir.$usermap);
+@userpaths=parse_csv($datadir.$usermap);
 
 # Create New Rights Structure 
-newrights();
+new_rights();
 
 # Process New Rights Structure
 
@@ -120,11 +112,17 @@ sub clean_files {
 	}
 }
 
-# Check whether a nlm is loaded. Returns 0 if not running, >=1 otherwise
-# Relies on NRM XML files
-
-# Input:  Name of NLM to test (case sensitive)
-# Output: Number of instances found (zero if not found)
+#-------------------------(  get_module_status  )-------------------------------#
+#  FUNCTION:	get_modules_status						#
+#										#
+#  PURPOSE:	heck whether a nlm is loaded. Returns 0 if not running, 	#
+#		>=1 otherwise.  Relies on NRM XML filesSlurp file for data into	#
+#		array and close file handle.  					#
+#										#
+#  ARGS:	$nlm - Case Sensitive Name of NLM to Test For			#
+#										#
+#  RETURNS:	$COUNT - Number of instances found (zero if not found)		#
+#-------------------------------------------------------------------------------#
 sub get_module_status {  
 	my $COUNT=0;
 	my @modules;
@@ -189,8 +187,8 @@ sub mail_results {
 	my $boundary="frontier"; # Define Mail Boundary
 
 	# Parse Full Backup File into Email
-	@fulldata=parsefile($datadir.$fullbackup);
-	@postdata=parsefile($datadir.$postprocess);
+	@fulldata=parse_file($datadir.$fullbackup);
+	@postdata=parse_file($datadir.$postprocess);
    
 	$smtp->mail($sender);
 	$smtp->recipient($recipient,{SkipBad=>1});
@@ -224,7 +222,7 @@ sub mail_results {
 }
 
 # New Rights Structure from User Input and Trustee Backup
-sub newrights {
+sub new_rights {
         my @contents;
 
 	my $escaped_line;
@@ -239,7 +237,7 @@ sub newrights {
 
 	my $x=0;
 
-        @contents=parsefile($fullbackup);
+        @contents=parse_file($fullbackup);
 
 	foreach $trueline (@userpaths) {
 		my $index = 0;
@@ -260,8 +258,17 @@ sub newrights {
 	print @contents;
 }
 
-# Parse User Input CSV into Home Directory Paths
-sub parsecsv {
+#----------------------------(  parse_file  )-----------------------------------#
+#  FUNCTION:	parse_file							#
+#										#
+#  PURPOSE:	Parse User Input CSV from Quest NDS Migrator into Directory	#
+#		Paths for Rights Removal and load into Array.    		#
+#										#
+#  ARGS:	$csvfile - CSV Input File with Right Alterations		#
+#										#
+#  RETURNS:	@pathresults - Formatted Output Array in Common File Syntax	#
+#-------------------------------------------------------------------------------#
+sub parse_csv {
 	# Passed Subroutine Variables
 	my $csvfile=$_[0]; #CSV Input File
 
@@ -272,7 +279,7 @@ sub parsecsv {
 	my $userpath; # User Home Directory Field Data
 
 	# Acquire File Parse Results
-	@contents=parsefile($csvfile);
+	@contents=parse_file($csvfile);
 	
 	# Rewrite Home Directory Paths
 	foreach (@contents) {
@@ -289,8 +296,16 @@ sub parsecsv {
 	return @pathresults;	
 }
 
-# Simple Sub to Parse a File's Contents
-sub parsefile {
+#----------------------------(  parse_file  )-----------------------------------#
+#  FUNCTION:	parse_file							#
+#										#
+#  PURPOSE:	Slurp file for data into array and close file handle.  		#
+#										#
+#  ARGS:	$file - Input File for Parsing					#
+#										#
+#  RETURNS:	@contents - File Contents in Array				#
+#-------------------------------------------------------------------------------#
+sub parse_file {
 	# Passed in Variables
 	my $file=$_[0];
 	
@@ -304,17 +319,17 @@ sub parsefile {
 	return @contents;
 }
 
-#----------------------------(  promptUser  )---------------------------#
-#  FUNCTION:	promptUser												#
-#																		#
+#----------------------------(  prompt_user  )----------------------------------#
+#  FUNCTION:	prompt_user							#
+#										#
 #  PURPOSE:	Prompt the user for some type of input, and return the		#
-#		input back to the calling program.								#
-#																		#
+#		input back to the calling program.				#
+#										#
 #  ARGS:	$promptString - what you want to prompt the user with		#
-#		$defaultValue - (optional) a default value for the prompt		#
-#																		#
-#-----------------------------------------------------------------------#
-sub promptUser {
+#		$defaultValue - (optional) a default value for the prompt	#
+#										#
+#-------------------------------------------------------------------------------#
+sub prompt_user {
 	#-------------------------------------------------------------------#
 	#  two possible input arguments - $promptString, and $defaultValue  #
 	#  make the input arguments local variables.                        #
@@ -336,21 +351,21 @@ sub promptUser {
 	$_ = <STDIN>;	# get the input from STDIN (presumably the keyboard)
 
 
-	#-------------------------------------------------------------------#
+	#-----------------------------------------------------------------------#
 	# remove the newline character from the end of the input the user	#
-	# gave us.															#
-	#-------------------------------------------------------------------#
+	# gave us.								#
+	#-----------------------------------------------------------------------#
 	chomp;
 
-	#-------------------------------------------------------------------#
+	#-----------------------------------------------------------------------#
 	#  if we had a $default value, and the user gave us input, then		#
 	#  return the input; if we had a default, and they gave us no		#
-	#  no input, return the $defaultValue.								#
-	#																	# 
+	#  no input, return the $defaultValue.					#
+	#									# 
 	#  if we did not have a default value, then just return whatever	#
-	#  the user gave us.  if they just hit the <enter> key,				#
-	#  the calling routine will have to deal with that.					#
-	#-------------------------------------------------------------------#
+	#  the user gave us.  if they just hit the <enter> key,			#
+	#  the calling routine will have to deal with that.			#
+	#-----------------------------------------------------------------------#
 	if ("$defaultValue") {
 		return $_ ? $_ : $defaultValue;    # return $_ if it has a value
 	} else {
@@ -358,7 +373,11 @@ sub promptUser {
 	}
 }
 
-# Subroutine that waits for module Unloads to complete
+#----------------------------(  wait_for_nlm  )---------------------------------#
+#  FUNCTION:	wait_for_nlm							#
+#										#
+#  PURPOSE:	Loop while an NLM Remains Loaded				#
+#-------------------------------------------------------------------------------#
 sub wait_for_nlm {   	
 	# Local Variables
 	my $i=0; # Loop Counter for Module Time Bailout
