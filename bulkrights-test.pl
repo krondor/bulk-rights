@@ -59,11 +59,16 @@ my $recipient='someuser@somedomain.com'; # Processing Results Recipient
 my $relay="smtpserver.domainname.com"; # SMTP Relay Hostname or IP Address
 my $sender=$host.'@domainname.com'; # SMTP Sender Address
 my $timeout=3600; # Maximum Time to Wait for System Commands
+my $treename="NDSTREE"; # Novell Tree Name for Regex on Quest Input
 my $usermap="user.map"; #User Input File for Home Mappings
 
 # Set up the parameters for our system commands
 my @backupcmd=($nlm, "/ETI", "save", "ALL");
 my @removecmd=($nlm, "remove");
+
+#---------------------------------------
+# CONFIGURATION END -- DO NOT EDIT
+#---------------------------------------
 
 # Noteate Final Array Element Numbers
 my $backlast=$#backupcmd;
@@ -83,7 +88,7 @@ system("load @backupcmd $datadir$fullbackup");
 sleep(2); # Delay Processing 2 Seconds for NLM Load
 wait_for_nlm();
 
-# something
+# Parse Input CSV of Migrating Folders
 @userpaths=parsecsv($datadir.$usermap);
 
 # Create New Rights Structure 
@@ -275,7 +280,7 @@ sub parsecsv {
 		next if (/UserID,NDSMap/);
 		($userid, $userpath) = split(" ");
 		# Regex Isolate the Server Relative Paths
-		$userpath =~ s/^NDS:\/\/TREE\\\\$host\\//g;
+		$userpath =~ s/^NDS:\/\/$treename\\\\$host\\//g;
 		$userpath =~ s/(\\HOME.+)/:$+/g;
 		# Write Reformatted Paths to Results Array
 		push(@pathresults,$userpath);
