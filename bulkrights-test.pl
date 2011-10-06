@@ -46,6 +46,7 @@ my @volumes; # Server Volumes Array
 # Editable Configuration Settings
 my $datadir="./"; #Trustee Results Data Directory
 my $fullbackup="trustee.txt"; #Full Trustee Backup Filename
+my $newrights="newtrustee.txt"; # New Trustee Rights Structure
 my $postprocess="newtrusts.csv"; #Post Migration Trustee Backup
 my $recipient='someuser@example.com'; # Processing Results Recipient
 my $relay="smtpserver.example.com"; # SMTP Relay Hostname or IP Address
@@ -108,11 +109,13 @@ sub clean_files {
 	print "Scanning for existing Trustee CSV files in $datadir\n";
 	if (-e $datadir.$fullbackup) {
 		print "Unlinking $datadir$fullbackup.\n";
-		unlink(glob("$datadir$fullbackup")) || die "Can't Delete $datadir$fullbackup: $!";
+		unlink(glob("$datadir$fullbackup")) || 
+			die "Can't Delete $datadir$fullbackup: $!";
 	}
 	if (-e $datadir.$postprocess) {
 		print "Unlinking $datadir$postprocess.\n";
-		unlink(glob("$datadir$postprocess")) || die "Can't Delete $datadir$postprocess: $!";
+		unlink(glob("$datadir$postprocess")) || 
+			die "Can't Delete $datadir$postprocess: $!";
 	}
 }
 
@@ -134,7 +137,8 @@ sub get_module_status {
 	# The NRM XML file that keeps a note of which modules are loaded
 	my $nrm_file="_admin:/Novell/NRM/NRMModules.xml";
 
-	open(NRMFILE,$nrm_file) || die "Unable to open $nrm_file. Is NSS loaded?";
+	open(NRMFILE,$nrm_file) ||
+			die "Unable to open $nrm_file. Is NSS loaded?";
 		@modules=<NRMFILE>;
 	close(NRMFILE);
 	
@@ -153,10 +157,12 @@ sub get_volumes {
 	my @vol_names; # Volume Details Array
 
 	# Open Volumes XML Listing
-	opendir(VOLDIR,"_admin:/Volumes/") || die "Could not open NSS Management file: $!";
+	opendir(VOLDIR,"_admin:/Volumes/") ||
+		die "Could not open NSS Management file: $!";
 	
 	# Initialize Volumes into Array
-	@vol_names=readdir(VOLDIR) || die "Could not read volumes file: $!";
+	@vol_names=readdir(VOLDIR) ||
+		die "Could not read volumes file: $!";
 	
 	# Close Volume File when finished Parsing
 	closedir(VOLDIR);
@@ -166,8 +172,10 @@ sub get_volumes {
 	
 	# Restrict the Array Contents to Real Volumes Only
 	while ($i < $ending_value) {
-		if ((($vol_names[$i]) eq "SYS") || (($vol_names[$i]) eq "_ADMIN") ||
-			(($vol_names[$i]) =~ m/IV_$/) || (($vol_names[$i]) eq ".") ||
+		if ((($vol_names[$i]) eq "SYS") ||
+			(($vol_names[$i]) eq "_ADMIN") ||
+			(($vol_names[$i]) =~ m/IV_$/) ||
+			(($vol_names[$i]) eq ".") ||
 			(($vol_names[$i]) eq "..")) {
 				splice(@vol_names,$i,1);
 		} else {
@@ -255,6 +263,8 @@ sub new_rights {
 		}
 	}
 	sleep 4;
+	# Write New Changes to File
+	write_file(@contents);
 }
 
 #----------------------------(  parse_file  )-----------------------------------#
@@ -396,4 +406,23 @@ sub wait_for_nlm {
 		$i++;
 	}
 	print "\n";
+}
+
+#----------------------------(  write_file  )-----------------------------------#
+#  FUNCTION:	write_file							#
+#										#
+#  PURPOSE:	Write Array Data to File and Close File Handle  		#
+#										#
+#  ARGS:	$file - Output File for Writing					#
+#										#
+#  RETURNS:	@contents - File Contents in Array				#
+#-------------------------------------------------------------------------------#
+sub write_file {
+	# Array Data to Write
+	my @contents=@_;
+	
+	# Open File Handle and Slurp Contents to Array
+	open(FILE,">".$datadir.$newrights) || die "could not open file: $!";
+		print FILE @newrights;
+	close(FILE);
 }
