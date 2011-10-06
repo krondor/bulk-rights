@@ -227,30 +227,26 @@ sub mail_results {
 
 # New Rights Structure from User Input and Trustee Backup
 sub new_rights {
-        my @contents;
+        my @contents; # Array for Trustee Parsing Contents
 
-	my $escaped_line;
-	my $line;
-	my @matches;
-	my @trustlist;
+	my $utility; # Variable to Contain Generating Utilty for CSV
+	my $rightpath; # Path of Trustee Privileges from CSV Data
+	my $inputline; # Line of Data from User Input
+	my $remainder; # Variable to Contain All Other CSV Data
 
-	my $utility;
-	my $rightpath;
-	my $trueline;
-	my $remainder;
+	# Parse Existing Trustee Rights into Contents Array
+        @contents=parse_file($datadir.$fullbackup);
 
-	my $x=0;
-
-        @contents=parse_file($fullbackup);
-
-	foreach $trueline (@userpaths) {
+	# Loop through Input File and Compare to Existing Trustees
+	foreach $inputline (@userpaths) {
 		my $index = 0;
 		while ($index <= $#contents ) {
 			my $value = $contents[$index];
 			($utility,$rightpath,$remainder)=split(",",$value,3);
 			# Remove Quotes from Directory Path Field
 			$rightpath=~s/\"//g;
-			if ($rightpath eq $trueline) {
+			# Remove Matches from Array
+			if ($rightpath eq $inputline) {
 				print "$rightpath | $trueline\n";
 				splice @contents,$index,1;
 			} else {
@@ -259,7 +255,6 @@ sub new_rights {
 		}
 	}
 	sleep 4;
-	print @contents;
 }
 
 #----------------------------(  parse_file  )-----------------------------------#
