@@ -159,8 +159,6 @@ sub get_module_status {
 #                                                                       #
 #  RETURNS:     @vol_names - Array of Discovered Volume Names		#
 #-----------------------------------------------------------------------#
-
-# Parse Server Volume Details into Array for Process Filtering
 sub get_volumes {
 	my $ending_value; # Array Length Notation
 	my $i=0; # Initialize Array Counter
@@ -195,7 +193,15 @@ sub get_volumes {
 	return @vol_names;
 }
 
-# Subroutine that sends an SMTP Status Message with Results
+#---------------------------(  mail_results  )--------------------------#
+#  FUNCTION:    mail_results						#
+#                                                                       #
+#  PURPOSE:     Send an SMTP Status Message with Program Results	#
+#                                                                       #
+#  ARGS:        $recipient - Recipient Address of the Message		#
+#		$relay - Server to Receive the Message			#
+#		$sender - Sender Address of the Message			#
+#-----------------------------------------------------------------------#
 sub mail_results {
 	# Passed Variables
 	my $recipient=$_[0]; # Passed Mail Recipient Variable
@@ -277,16 +283,15 @@ sub new_rights {
 	write_file(@contents);
 }
 
-#----------------------------(  parse_file  )-----------------------------------#
-#  FUNCTION:	parse_file							#
-#										#
-#  PURPOSE:	Parse User Input CSV from Quest NDS Migrator into Directory	#
-#		Paths for Rights Removal and load into Array.    		#
-#										#
-#  ARGS:	$csvfile - CSV Input File with Right Alterations		#
-#										#
-#  RETURNS:	@pathresults - Formatted Output Array in Common File Syntax	#
-#-------------------------------------------------------------------------------#
+#----------------------------(  parse_file  )---------------------------#
+#  FUNCTION:	parse_file						#
+#  PURPOSE:	Parse User Input CSV from Quest NDS Migrator into 	#
+#		Directory Paths for Rights Removal and load into Array.	#
+#									#
+#  ARGS:	$csvfile - CSV Input File with Right Alterations	#
+#									#
+#  RETURNS:	@pathresults - Formatted Output Array in File Syntax	# 
+#-----------------------------------------------------------------------#
 sub parse_csv {
 	# Passed Subroutine Variables
 	my $csvfile=$_[0]; #CSV Input File
