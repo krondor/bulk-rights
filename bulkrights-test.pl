@@ -63,7 +63,7 @@ my @removecmd=($nlm, "remove");
 # CONFIGURATION END -- DO NOT EDIT
 #---------------------------------------
 
-# Noteate Final Array Element Numbers
+# Note Final Array Element Numbers
 my $backlast=$#backupcmd;
 my $removelast=$#removecmd;
 
@@ -99,11 +99,11 @@ mail_results($recipient,$relay,$sender);
 
 ###### Subroutines and functions ######
 
-#------------------------------(  clean_files  )--------------------------------#
-#  FUNCTION:	clean_files							#
-#										#
-#  PURPOSE:	Cleanup Rigts Files and other Bits this Program May Leave	#
-#-------------------------------------------------------------------------------#
+#------------------------------(  clean_files  )------------------------#
+#  FUNCTION:	clean_files						#
+#									#
+#  PURPOSE:	Cleanup Rights Files and Bits this Program May Leave	#
+#-----------------------------------------------------------------------#
 sub clean_files {
 	# Delete Any Files Present in DATA Directory Before Posting New Files
 	print "Scanning for existing Trustee CSV files in $datadir\n";
@@ -119,17 +119,17 @@ sub clean_files {
 	}
 }
 
-#-------------------------(  get_module_status  )-------------------------------#
-#  FUNCTION:	get_modules_status						#
-#										#
-#  PURPOSE:	heck whether a nlm is loaded. Returns 0 if not running, 	#
-#		>=1 otherwise.  Relies on NRM XML filesSlurp file for data into	#
-#		array and close file handle.  					#
-#										#
-#  ARGS:	$nlm - Case Sensitive Name of NLM to Test For			#
-#										#
-#  RETURNS:	$COUNT - Number of instances found (zero if not found)		#
-#-------------------------------------------------------------------------------#
+#-------------------------(  get_module_status  )-----------------------#
+#  FUNCTION:	get_modules_status					#
+#									#
+#  PURPOSE:	heck whether a nlm is loaded. Returns 0 if not running, #
+#		>=1 otherwise.  Relies on NRM XML filesSlurp file for 	#
+#		data into array and close file handle.  		#
+#									#
+#  ARGS:	$nlm - Case Sensitive Name of NLM to Test For		#
+#									#
+#  RETURNS:	$COUNT - Number of instances found (zero if not found)	#
+#-----------------------------------------------------------------------#
 sub get_module_status {  
 	my $COUNT=0;
 	my @modules;
@@ -143,12 +143,22 @@ sub get_module_status {
 	close(NRMFILE);
 	
 	foreach(@modules) {
-	  if (/$nlm/) {
-		 ++$COUNT;
-      }
-   }
-   return $COUNT;
+		if (/$nlm/) {
+			++$COUNT;
+      		}	
+   	}
+	return $COUNT;
 }
+
+#----------------------------(  get_volumes  )--------------------------#
+#  FUNCTION:    get_volumes						#
+#                                                                       #
+#  PURPOSE:     Determine which volumes are present on a NetWare server,#
+#		but only after discounting special volumes (ADMIN, SYS,	#
+#		SNAPSHOT).  						#
+#                                                                       #
+#  RETURNS:     @vol_names - Array of Discovered Volume Names		#
+#-----------------------------------------------------------------------#
 
 # Parse Server Volume Details into Array for Process Filtering
 sub get_volumes {
