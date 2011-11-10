@@ -74,7 +74,8 @@ print join "\n\t",@volumes;
 print "\n\n";
 
 # Cleanup Leftover Files from Previous Run if Present
-clean_files();
+clean_files($datadir.$fullbackup);
+clean_files($datadir.$postprocess);
 
 # Retrieve Full Backup of System Trustees
 system("load @backupcmd $datadir$fullbackup");
@@ -105,17 +106,14 @@ mail_results($recipient,$relay,$sender);
 #  PURPOSE:	Cleanup Rights Files and Bits this Program May Leave	#
 #-----------------------------------------------------------------------#
 sub clean_files {
-	# Delete Any Files Present in DATA Directory Before Posting New Files
+        my $leftover=$_[0]; # File with Full Path to be Cleaned
+
+	# Delete Any Leftover File Present Before Posting New Files
 	print "Scanning for existing Trustee CSV files in $datadir\n";
-	if (-e $datadir.$fullbackup) {
-		print "Unlinking $datadir$fullbackup.\n";
-		unlink(glob("$datadir$fullbackup")) || 
-			die "Can't Delete $datadir$fullbackup: $!";
-	}
-	if (-e $datadir.$postprocess) {
-		print "Unlinking $datadir$postprocess.\n";
-		unlink(glob("$datadir$postprocess")) || 
-			die "Can't Delete $datadir$postprocess: $!";
+	if (-e $leftover) {
+		print "Unlinking $leftover.\n";
+		unlink(glob("$leftover")) || 
+			die "Can't Delete $leftover: $!";
 	}
 }
 
@@ -343,16 +341,15 @@ sub parse_file {
 	return @contents;
 }
 
-#----------------------------(  prompt_user  )----------------------------------#
-#  FUNCTION:	prompt_user							#
-#										#
-#  PURPOSE:	Prompt the user for some type of input, and return the		#
-#		input back to the calling program.				#
-#										#
-#  ARGS:	$promptString - what you want to prompt the user with		#
-#		$defaultValue - (optional) a default value for the prompt	#
-#										#
-#-------------------------------------------------------------------------------#
+#----------------------------(  prompt_user  )--------------------------#
+#  FUNCTION:	prompt_user						#
+#									#
+#  PURPOSE:	Prompt the user for some type of input, and return the	#
+#		input back to the calling program.			#
+#									#
+#  ARGS:	$promptString - what you want to prompt the user with	#
+#		$defaultValue - (optional)  default value for the prompt#
+#-----------------------------------------------------------------------#
 sub prompt_user {
 	#-------------------------------------------------------------------#
 	#  two possible input arguments - $promptString, and $defaultValue  #
@@ -374,22 +371,18 @@ sub prompt_user {
 	$| = 1;		# force a flush after our print
 	$_ = <STDIN>;	# get the input from STDIN (presumably the keyboard)
 
-
-	#-----------------------------------------------------------------------#
-	# remove the newline character from the end of the input the user	#
-	# gave us.								#
-	#-----------------------------------------------------------------------#
+	# Strip Newline on Carriage Return
 	chomp;
 
-	#-----------------------------------------------------------------------#
-	#  if we had a $default value, and the user gave us input, then		#
-	#  return the input; if we had a default, and they gave us no		#
-	#  no input, return the $defaultValue.					#
-	#									# 
-	#  if we did not have a default value, then just return whatever	#
-	#  the user gave us.  if they just hit the <enter> key,			#
-	#  the calling routine will have to deal with that.			#
-	#-----------------------------------------------------------------------#
+	#---------------------------------------------------------------#
+	#  if we had a $default value, and the user gave us input, then	#
+	#  return the input; if we had a default, and they gave us no	#
+	#  no input, return the $defaultValue.				#
+	#								# 
+	#  if we did not have a default value, then just return whatever#
+	#  the user gave us.  if they just hit the <enter> key,		#
+	#  the calling routine will have to deal with that.		#
+	#---------------------------------------------------------------#
 	if ("$defaultValue") {
 		return $_ ? $_ : $defaultValue;    # return $_ if it has a value
 	} else {
