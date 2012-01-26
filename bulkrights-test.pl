@@ -251,6 +251,8 @@ sub mail_results {
 #  FUNCTION:	new_rights						#
 #  PURPOSE:	Refactor Rights File for Import with New Rights		#
 #		Structure From User Input and Trustee Backup		#
+# 									#
+#  RETURNS:	@contents - Formatted Rights CSV for Processing		#
 #-----------------------------------------------------------------------#
 sub new_rights {
         my @contents; # Array for Trustee Parsing Contents
