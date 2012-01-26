@@ -247,7 +247,11 @@ sub mail_results {
 	$smtp->quit;
 }
 
-# New Rights Structure from User Input and Trustee Backup
+#-------------------------( new_rights )--------------------------------#
+#  FUNCTION:	new_rights						#
+#  PURPOSE:	Refactor Rights File for Import with New Rights		#
+#		Structure From User Input and Trustee Backup		#
+#-----------------------------------------------------------------------#
 sub new_rights {
         my @contents; # Array for Trustee Parsing Contents
 
